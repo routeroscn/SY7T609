@@ -124,4 +124,5 @@ bool writeRegister(uint16_t addr, uint32_t value);
 void initSy7t609(void);
 // bool setAutoReporting(bool enableAutoReporting);
 void sy7t609MeasurementProcess(sy7t609_info_t *s_info);
+bool sendCalibration(uint32_t igain);
 #endif //__SY7T609_UART_PROTOCOL_H__

@@ -405,3 +405,66 @@ bool setAutoReporting(bool enable) {
   }
   return true;
 }
+
+//修改电压
+bool sendCalibration(uint32_t igain) {
+   //0x039080
+  // uint32_t command = 0x038270; // 0x038270 230  0x035B60 220
+  uint32_t commanda = 0x038270;  //229500
+  //200-240v范围
+ if (igain > 0x030D40 || igain < 0x03A980) {
+    commanda = igain;
+  }
+  if (writeRegister(ADDR_COMMAND, CMD_REG_CLEAR_ENGERGY_COUNTERS) == false) {
+    return false;
+  }
+   delay(100);
+   //计量单位小时
+  if (writeRegister(ADDR_BUCKETH, 0x000247) == false) {
+    return false;
+  }
+  delay(50);
+    if (writeRegister(ADDR_BUCKETL, 0x6E4F76) == false) {
+    return false;
+  }
+  //默认值
+  delay(50);
+  if (writeRegister(ADDR_ACCUM, 0x001A2C) == false) {
+    return false;
+  }
+  //目标电压
+   delay(50);
+  if (writeRegister(ADDR_VRMS_TARGET, commanda) == false) {
+    return false;
+  }
+   // delay(50);
+   // if (writeRegister(ADDR_VGAIN, commanda) == false) {
+    // return false;
+  // }
+    // delay(50);
+
+   //启动电压校准
+  if (writeRegister(ADDR_COMMAND, CMD_REG_CALIBRATION_VOLTAGE) == false) {
+    return false;
+  } 
+    // delay(50);
+   //如果有什么问题就使用下面的
+  // if (writeRegister(ADDR_COMMAND, CMD_REG_CLEAR_FLASH_STORAGE_0) == false) {
+    // return false;
+  // }
+   // delay(50);
+  // if (writeRegister(ADDR_COMMAND, CMD_REG_CLEAR_FLASH_STORAGE_1) == false) {
+    // return false;
+  // }
+
+  delay(5000);
+  // Save to Flash
+  if (writeRegister(ADDR_COMMAND, CMD_REG_SAVE_TO_FLASH) == false) {
+    return false;
+  }
+  // delay(50);
+  // if (writeRegister(ADDR_COMMAND, CMD_REG_SOFT_RESET) == false) {
+    // return false;
+  // }
+  return true;
+}
