@@ -1,0 +1,9 @@
+name=SY7T609
+version=1.0.0
+author=xiangge
+maintainer=xiangge <admin@routeros.cn>
+sentence=Library for communicating with SY7T609 via UART.
+paragraph=This library provides functions to communicate with SY7T609 energy meter using UART interface.
+category=Communication
+url=https://github.com/your_username/SY7T609_UART
+architectures=*
