@@ -1,0 +1,47 @@
+#include <Arduino.h>
+#include <ESP8266HTTPUpdateServer.h>
+#include "sy7t609-uart-protocol.h"
+
+## 其他的自定义代码
+
+sy7t609_info_t my_info;
+static unsigned long measurement_timestamp = millis();
+
+
+void handleRoot() {
+    String html = "<html><head><meta charset='UTF-8'>";
+    html += "<meta http-equiv='refresh' content='30'>";
+    html += "</head><body>";
+    html += "<h1>电力信息</h1>";
+    // 定义变量和对应的中文注释数组
+    const char* variable_names[] = { "有效电压", "有效电流", "功率因素", "有功功率", "无功功率", "能量计数", "频率", "温度" };
+    const char* variable_unit[] = { "V", "A", "PF", "W", "VAR", "Kw/h", "Hz", "℃" };
+    // 遍历数组，并将每个变量的值与其对应的中文注释连接起来，添加到 HTML 字符串中
+    char buffer[10]; // 为了容纳包括小数点在内的数字和小数部分的字符
+    for (int i = 0; i < sizeof(my_info) / sizeof(uint32_t); ++i) {
+     // float value = *((uint32_t*)&my_info + i);
+	  float value = (*((uint32_t*)&my_info + i)) / 1000.0f;
+    dtostrf(value, 6, 2, buffer); // 保留两位小数
+      html += "<p>" + String(variable_names[i]) + ": " + String(buffer) + " " + String(variable_unit[i]) + "</p>";  // 将每个变量的值与中文注释连接起来，并添加到 HTML 字符串中
+    }
+    html += "</body></html>";
+    server.send(200, "text/html", html);
+}
+
+void setup() {
+  Serial.begin(9600);  // 初始化串口通信
+  server.on("/", handleRoot);
+  server.onNotFound([]() {
+    server.send(404, "text/plain", "www.routeros.cn");
+  });
+  server.begin();
+  initSy7t609();
+}
+
+void loop() {
+  // 更新时间戳
+  if (millis() - measurement_timestamp > 1100ul) {
+    sy7t609MeasurementProcess(&my_info);
+    measurement_timestamp = millis();
+  }
+}
