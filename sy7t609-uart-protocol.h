@@ -78,11 +78,11 @@ enum sy7t609_register_map {
     // 校准寄存器
      ADDR_BUCKETL     = 0x00C0,  // 电表低16位寄存器
      ADDR_BUCKETH     = 0x00C3,  // 电表高8位寄存器
-    // ADDR_IGAIN       = 0x00D5,  // 电流增益
+    ADDR_IGAIN       = 0x00D5,  // 电流增益
     ADDR_VGAIN       = 0x00D8,  // 电压增益
     // ADDR_ISCALE      = 0x00ED,  // 电流刻度
     // ADDR_VSCALE      = 0x00F0,  // 电压刻度
-    // ADDR_PSCALE      = 0x00F3,  // 功率刻度
+    ADDR_PSCALE      = 0x00F3,  // 功率刻度
     ADDR_ACCUM       = 0x0105,  // 累计间隔寄存器
     ADDR_IRMS_TARGET = 0x0117,  // 电流有效值目标 校准电压用的当前基准值
     ADDR_VRMS_TARGET = 0x011A   // 电压有效值目标

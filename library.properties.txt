@@ -5,5 +5,5 @@ maintainer=xiangge <admin@routeros.cn>
 sentence=Library for communicating with SY7T609 via UART.
 paragraph=This library provides functions to communicate with SY7T609 energy meter using UART interface.
 category=Communication
-url=https://github.com/your_username/SY7T609_UART
+url=https://github.com/routeroscn/SY7T609
 architectures=*

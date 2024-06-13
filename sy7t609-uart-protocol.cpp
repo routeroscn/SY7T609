@@ -379,7 +379,7 @@ static uint32_t readFREQUENCY(void) {
   // }
   // return true;
 // }
-//重置统计数据
+//重置统计数据 清除所有能量计数器
 static bool clearEnergyCounters(void) {
   if (writeRegister(ADDR_COMMAND, CMD_REG_CLEAR_ENGERGY_COUNTERS) == false) {
     return false;
@@ -410,21 +410,32 @@ bool setAutoReporting(bool enable) {
 bool sendCalibration(uint32_t igain) {
    //0x039080
   // uint32_t command = 0x038270; // 0x038270 230  0x035B60 220
-  uint32_t commanda = 0x038270;  //229500
+  uint32_t commanda = 0x03807C;  //229500 3807c
   //200-240v范围
  if (igain > 0x030D40 || igain < 0x03A980) {
     commanda = igain;
   }
+//重置统计数据 清除所有能量计数器
   if (writeRegister(ADDR_COMMAND, CMD_REG_CLEAR_ENGERGY_COUNTERS) == false) {
     return false;
   }
+
+//ISCALE        (0x00F230)默认
+//PSCALE        (0x027703) 默认值
    delay(100);
    //计量单位小时
   if (writeRegister(ADDR_BUCKETH, 0x000247) == false) {
     return false;
   }
+  // 14003942
+  //功率刻度默认值 0x7780A5 7831717 和这个没有什么关系
   delay(50);
-    if (writeRegister(ADDR_BUCKETL, 0x6E4F76) == false) {
+    if (writeRegister(ADDR_BUCKETL, 0x7780A5) == false) {
+    return false;
+  }
+  //功率刻度默认值
+  delay(50);
+  if (writeRegister(ADDR_PSCALE, 0x027703) == false) {
     return false;
   }
   //默认值
@@ -432,21 +443,39 @@ bool sendCalibration(uint32_t igain) {
   if (writeRegister(ADDR_ACCUM, 0x001A2C) == false) {
     return false;
   }
+    // ADDR_IGAIN         = 0x00D5,
+    // ADDR_VGAIN         = 0x00D8,
+  delay(50);
+  if (writeRegister(ADDR_IGAIN, 0x43DF0D) == false) {
+    return false;
+  }
+  //自动校准就不需要这个了
+   // if (writeRegister(ADDR_IRMS_TARGET, 0x000014) == false) {
+    // return false;
+  // } 
   //目标电压
    delay(50);
   if (writeRegister(ADDR_VRMS_TARGET, commanda) == false) {
     return false;
   }
+  //电流校准
    // delay(50);
    // if (writeRegister(ADDR_VGAIN, commanda) == false) {
     // return false;
   // }
     // delay(50);
-
+//电流校正
+  // if (writeRegister(ADDR_COMMAND, CMD_REG_CALIBRATION_CURRENT) == false) {
+    // return false;
+  // }
    //启动电压校准
   if (writeRegister(ADDR_COMMAND, CMD_REG_CALIBRATION_VOLTAGE) == false) {
     return false;
-  } 
+  }
+  //电流校准
+  // if (writeRegister(ADDR_COMMAND, CMD_REG_CALIBRATION_CURRENT) == false) {
+    // return false;
+  // } 
     // delay(50);
    //如果有什么问题就使用下面的
   // if (writeRegister(ADDR_COMMAND, CMD_REG_CLEAR_FLASH_STORAGE_0) == false) {
