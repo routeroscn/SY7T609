@@ -2,11 +2,9 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include "sy7t609-uart-protocol.h"
 
-## 其他的自定义代码
-
 sy7t609_info_t my_info;
 static unsigned long measurement_timestamp = millis();
-
+ESP8266WebServer server(80);
 
 void handleRoot() {
     String html = "<html><head><meta charset='UTF-8'>";
@@ -36,6 +34,8 @@ void setup() {
   });
   server.begin();
   initSy7t609();
+    // 可以加上第一次自动校准0x03807C 229.5v
+   //sendCalibration(0x03807C);
 }
 
 void loop() {
